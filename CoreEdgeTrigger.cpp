@@ -5,16 +5,18 @@
  * SPDX-License-Identifier: MIT
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Include
  */
+
+//-----------------------------------------------------------------------------
 #include "chip_arterytek_at32f415.h"
 
-//-----------------------------------------------------------------------------------------
-#include "./../CoreInterrupt.h"
-#include "CoreEdgeTrigger.h"
+//-----------------------------------------------------------------------------
+#include "core_arterytek_at32f415/CoreEdgeTrigger.h"
+#include "core_arterytek_at32f415/CoreInterrupt.h"
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * namesapce;
  */
 namespace core {
@@ -132,57 +134,49 @@ namespace core {
   }
 }  // namespace core
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Macro
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Using
  */
-using core::digital::CoreEdgeTrigger;
+using core::CoreEdgeTrigger;
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 using chip::exint::EXINT0;
 using core::CoreInterrupt;
 
-/* ****************************************************************************************
- * Variable <Static>
- */
-
-/* ****************************************************************************************
+/* ****************************************************************************
  * Construct Method
  */
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 CoreEdgeTrigger::CoreEdgeTrigger(chip::exint::Line line) {
-  this->mEventFall = nullptr;
-  this->mEventRise = nullptr;
+  this->mEdgeTriggerEventFall = nullptr;
+  this->mEdgeTriggerEventRise = nullptr;
   this->mLine = line;
   this->mStatusFall = false;
   this->mStatusRise = false;
   return;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 CoreEdgeTrigger::~CoreEdgeTrigger(void) {
   this->enableAll(false);
   this->deinit();
   return;
 }
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Operator Method
  */
 
-/* ****************************************************************************************
- * Public Method <Static>
- */
-
-/* ****************************************************************************************
+/* ****************************************************************************
  * Public Method <Override> - mframe::hal::Base
  */
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreEdgeTrigger::deinit(void) {
   if (!this->isInit())
     return false;
@@ -194,7 +188,7 @@ bool CoreEdgeTrigger::deinit(void) {
   return true;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreEdgeTrigger::init(void) {
   if (this->isInit())
     return false;
@@ -210,16 +204,16 @@ bool CoreEdgeTrigger::init(void) {
   return true;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreEdgeTrigger::isInit(void) {
   return (EXINT0.inten & static_cast<uint32_t>(this->mLine));
 }
 
-/* ****************************************************************************************
- * Public Method <Override> - mframe::hal::trigger::EdgeTrigger
+/* ****************************************************************************
+ * Public Method <Override> - mframe::hal::EdgeTrigger
  */
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreEdgeTrigger::enableAll(bool enable) {
   if (enable)
     coreEdgeTriggerLevel |= static_cast<uint32_t>(this->mLine);
@@ -227,7 +221,7 @@ void CoreEdgeTrigger::enableAll(bool enable) {
     coreEdgeTriggerLevel &= ~static_cast<uint32_t>(this->mLine);
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreEdgeTrigger::enableFall(bool enable) {
   if (enable) {
     // if rise event is enable
@@ -261,7 +255,7 @@ void CoreEdgeTrigger::enableFall(bool enable) {
   return;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreEdgeTrigger::enableRise(bool enable) {
   if (enable) {
     // if fall event is enable
@@ -296,29 +290,29 @@ void CoreEdgeTrigger::enableRise(bool enable) {
   return;
 }
 
-//-----------------------------------------------------------------------------------------
-void CoreEdgeTrigger::setEventRise(mframe::hal::trigger::EventRise* event) {
+//-----------------------------------------------------------------------------
+void CoreEdgeTrigger::setEdgeTriggerEventRise(mframe::hal::EdgeTriggerEventRise* event) {
   if (event)
-    this->mEventRise = event;
+    this->mEdgeTriggerEventRise = event;
 
   else
-    this->mEventRise = this;
+    this->mEdgeTriggerEventRise = this;
 
   return;
 }
 
-//-----------------------------------------------------------------------------------------
-void CoreEdgeTrigger::setEventFall(mframe::hal::trigger::EventFall* event) {
+//-----------------------------------------------------------------------------
+void CoreEdgeTrigger::setEdgeTriggerEventFall(mframe::hal::EdgeTriggerEventFall* event) {
   if (event)
-    this->mEventFall = event;
+    this->mEdgeTriggerEventFall = event;
 
   else
-    this->mEventFall = this;
+    this->mEdgeTriggerEventFall = this;
 
   return;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreEdgeTrigger::readRise(void) {
   if (this->mStatusRise) {
     this->mStatusRise = false;
@@ -328,7 +322,7 @@ bool CoreEdgeTrigger::readRise(void) {
   return false;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreEdgeTrigger::readFall(void) {
   if (this->mStatusFall) {
     this->mStatusFall = false;
@@ -338,11 +332,11 @@ bool CoreEdgeTrigger::readFall(void) {
   return false;
 }
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Public Method <Override> - mframe::hal::InterruptEvent
  */
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreEdgeTrigger::interruptEvent(void) {
   uint32_t mask = static_cast<uint32_t>(this->mLine);
   if (EXINT0.polcfg1 & mask) {
@@ -351,7 +345,7 @@ void CoreEdgeTrigger::interruptEvent(void) {
       EXINT0.polcfg2 |= mask;
     }
 
-    this->mEventRise->onEdgeTriggerRise();
+    this->mEdgeTriggerEventRise->onEdgeTriggerRise();
 
   } else if (EXINT0.polcfg2 & mask) {
     if (coreEdgeTriggerLevel & mask) {
@@ -359,53 +353,52 @@ void CoreEdgeTrigger::interruptEvent(void) {
       EXINT0.polcfg1 |= mask;
     }
 
-    this->mEventFall->onEdgeTriggerFall();
+    this->mEdgeTriggerEventFall->onEdgeTriggerFall();
   }
 
   EXINT0.intsts |= mask;
   return;
 }
 
-/* ****************************************************************************************
- * Public Method <Override> - mframe::hal::trigger::EventFall
+/* ****************************************************************************
+ * Public Method <Override> - mframe::hal::EdgeTriggerEventFall
  */
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreEdgeTrigger::onEdgeTriggerFall(void) {
   this->mStatusFall = true;
   return;
 }
 
-/* ****************************************************************************************
- * Public Method <Override> - mframe::hal::trigger::EventRise
+/* ****************************************************************************
+ * Public Method <Override> - mframe::hal::EdgeTriggerEventRise
  */
-
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreEdgeTrigger::onEdgeTriggerRise(void) {
   this->mStatusRise = true;
   return;
 }
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Public Method
  */
 
-/* ****************************************************************************************
- * Protected Method <Static>
- */
-
-/* ****************************************************************************************
- * Protected Method <Override>
- */
-
-/* ****************************************************************************************
+/* ****************************************************************************
  * Protected Method
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Private Method
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
+ * Static Variable
+ */
+
+/* ****************************************************************************
+ * Static Method
+ */
+
+/* ****************************************************************************
  * End of file
  */

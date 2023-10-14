@@ -7,54 +7,45 @@
 #ifndef CHIP_25C7B452_0536_494F_9927_E6F526433BAC
 #define CHIP_25C7B452_0536_494F_9927_E6F526433BAC
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Include
  */
-#define USING_CHIP_USART
-#include "chip_arterytek_at32f415.h"
-//-----------------------------------------------------------------------------------------
 
-/* ****************************************************************************************
+//-----------------------------------------------------------------------------
+#include "chip_arterytek_at32f415.h"
+
+//-----------------------------------------------------------------------------
+
+/* ****************************************************************************
  * Namespace
  */
 namespace core {
   class CoreUSART;
 }
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Class/Interface/Struct/Enum
  */
 class core::CoreUSART : public mframe::lang::Object,
-                        public mframe::hal::usart::USART,
+                        public mframe::hal::usart::Uart,
                         public mframe::hal::InterruptEvent,
-                        public mframe::hal::usart::EventTransfer,
-                        public mframe::hal::usart::EventReceiver {
-  /* **************************************************************************************
-   * Variable <Public>
+                        public mframe::hal::usart::UartEventTransfer,
+                        public mframe::hal::usart::UartEventReceiver {
+  /* **************************************************************************
+   * Variable
    */
 
-  /* **************************************************************************************
-   * Variable <Protected>
-   */
-
-  /* **************************************************************************************
-   * Variable <Private>
-   */
  private:
   chip::usart::Register& mReg;
-  mframe::hal::usart::EventTransfer* mEventTransfer;
-  mframe::hal::usart::EventReceiver* mEventReceiver;
+  mframe::hal::usart::UartEventTransfer* mUartEventTransfer;
+  mframe::hal::usart::UartEventReceiver* mUartEventReceiver;
   uint32_t mBaudrate;
 
-  /* **************************************************************************************
-   * Abstract method <Public>
+  /* **************************************************************************
+   * Abstract method
    */
 
-  /* **************************************************************************************
-   * Abstract method <Protected>
-   */
-
-  /* **************************************************************************************
+  /* **************************************************************************
    * Construct Method
    */
  public:
@@ -71,15 +62,11 @@ class core::CoreUSART : public mframe::lang::Object,
    */
   virtual ~CoreUSART(void) override;
 
-  /* **************************************************************************************
+  /* **************************************************************************
    * Operator Method
    */
 
-  /* **************************************************************************************
-   * Public Method <Static>
-   */
-
-  /* **************************************************************************************
+  /* **************************************************************************
    * Public Method <Override> - mframe::hal::Base
    */
  public:
@@ -88,8 +75,8 @@ class core::CoreUSART : public mframe::lang::Object,
   virtual bool init(void) override;
 
   virtual bool isInit(void) override;
-  /* **************************************************************************************
-   * Public Method <Override> - mframe::hal::usart::USART
+  /* **************************************************************************
+   * Public Method <Override> - mframe::hal::usart::Uart
    */
  public:
   virtual uint32_t setBaudrate(uint32_t baudrate) override;
@@ -100,57 +87,49 @@ class core::CoreUSART : public mframe::lang::Object,
 
   virtual void beginReceiver(bool enable) override;
 
-  virtual void setEventTransfer(mframe::hal::usart::EventTransfer* event) override;
+  virtual void setUartEventTransfer(mframe::hal::usart::UartEventTransfer* event) override;
 
-  virtual void setEventReceiver(mframe::hal::usart::EventReceiver* event) override;
+  virtual void setUartEventReceiver(mframe::hal::usart::UartEventReceiver* event) override;
 
-  /* **************************************************************************************
+  /* **************************************************************************
    * Public Method <Override> - mframe::hal::InterruptEvent
    */
  public:
   virtual void interruptEvent(void) override;
 
-  /* **************************************************************************************
-   * Public Method <Override> - mframe::hal::usart::EventReceiver
+  /* **************************************************************************
+   * Public Method <Override> - mframe::hal::usart::UartEventReceiver
    */
  public:
   virtual bool onUartReceiver(const uint8_t data) override;
 
-  /* **************************************************************************************
-   * Public Method <Override> - mframe::hal::usart::EventTransfer
+  /* **************************************************************************
+   * Public Method <Override> - mframe::hal::usart::UartEventTransfer
    */
  public:
   virtual bool onUartTransfer(uint8_t& data) override;
-  /* **************************************************************************************
+  /* **************************************************************************
    * Public Method
    */
 
-  /* **************************************************************************************
-   * Protected Method <Static>
-   */
-
-  /* **************************************************************************************
-   * Protected Method <Override>
-   */
-
-  /* **************************************************************************************
+  /* **************************************************************************
    * Protected Method
    */
 
-  /* **************************************************************************************
-   * Private Method <Static>
-   */
-
-  /* **************************************************************************************
-   * Private Method <Override>
-   */
-
-  /* **************************************************************************************
+  /* **************************************************************************
    * Private Method
+   */
+
+  /* **************************************************************************
+   * Static Variable
+   */
+
+  /* **************************************************************************
+   * Static Method
    */
 };
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * End of file
  */
 

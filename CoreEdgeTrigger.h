@@ -4,8 +4,8 @@
  *
  * SPDX-License-Identifier: MIT
  */
-#ifndef CHIP_20B4C8B1_8FF1_45C9_8678_F51C7602D9A8
-#define CHIP_20B4C8B1_8FF1_45C9_8678_F51C7602D9A8
+#ifndef CHIP_03434AE2_6EA9_4B98_8C25_5E12DC94E3B0
+#define CHIP_03434AE2_6EA9_4B98_8C25_5E12DC94E3B0
 
 /* ****************************************************************************
  * Include
@@ -13,7 +13,6 @@
 
 //-----------------------------------------------------------------------------
 #include "chip_arterytek_at32f415.h"
-#include "mframe.h"
 
 //-----------------------------------------------------------------------------
 
@@ -21,24 +20,26 @@
  * Namespace
  */
 namespace core {
-  class CoreTimer;
+  class CoreEdgeTrigger;
 }
 
 /* ****************************************************************************
  * Class/Interface/Struct/Enum
  */
-class core::CoreTimer : public mframe::lang::Object,
-                        public mframe::hal::Timer,
-                        public mframe::hal::InterruptEvent,
-                        public mframe::hal::TimerEventCancel,
-                        public mframe::hal::TimerEventTrigger {
+class core::CoreEdgeTrigger : public mframe::lang::Object,
+                              public mframe::hal::EdgeTrigger,
+                              public mframe::hal::InterruptEvent,
+                              public mframe::hal::EdgeTriggerEventFall,
+                              public mframe::hal::EdgeTriggerEventRise {
   /* **************************************************************************
    * Variable
    */
  private:
-  chip::tmr::Register& mReg;
-  mframe::hal::TimerEventTrigger* mTimerEventTrigger;
-  mframe::hal::TimerEventCancel* mTimerEventCancel;
+  mframe::hal::EdgeTriggerEventRise* mEdgeTriggerEventRise;
+  mframe::hal::EdgeTriggerEventFall* mEdgeTriggerEventFall;
+  chip::exint::Line mLine;
+  bool mStatusRise;
+  bool mStatusFall;
 
   /* **************************************************************************
    * Abstract method
@@ -49,17 +50,17 @@ class core::CoreTimer : public mframe::lang::Object,
    */
  public:
   /**
-   * @brief Construct a new Core Timer object
+   * @brief Construct a new Core Edge Trigger object
    *
-   * @param reg
+   * @param line
    */
-  CoreTimer(chip::tmr::Register& reg);
+  CoreEdgeTrigger(chip::exint::Line line);
 
   /**
-   * @brief Destroy the Core Timer object
+   * @brief Destroy the Core Edge Trigger object
    *
    */
-  virtual ~CoreTimer(void) override;
+  virtual ~CoreEdgeTrigger(void) override;
 
   /* **************************************************************************
    * Operator Method
@@ -76,30 +77,22 @@ class core::CoreTimer : public mframe::lang::Object,
   virtual bool isInit(void) override;
 
   /* **************************************************************************
-   * Public Method <Override> - mframe::hal::Timer
+   * Public Method <Override> - mframe::hal::EdgeTrigger
    */
  public:
-  virtual void cancel(void) override;
+  virtual void enableAll(bool enable) override;
 
-  virtual bool isBusy(void) override;
+  virtual void enableFall(bool enable) override;
 
-  virtual bool isDone(void) override;
+  virtual void enableRise(bool enable) override;
 
-  virtual void waitDone(void) override;
+  virtual void setEdgeTriggerEventRise(mframe::hal::EdgeTriggerEventRise* event) override;
 
-  virtual uint32_t getTimerClock(void) override;
+  virtual void setEdgeTriggerEventFall(mframe::hal::EdgeTriggerEventFall* event) override;
 
-  virtual bool startAtTick(uint32_t tick) override;
+  virtual bool readRise(void) override;
 
-  virtual bool startAtTime(float second) override;
-
-  virtual bool startAtHertz(float hertz) override;
-
-  virtual void resetTick(uint32_t tick) override;
-
-  virtual void setTimerEventTrigger(mframe::hal::TimerEventTrigger* event) override;
-
-  virtual void setTimerEventCancel(mframe::hal::TimerEventCancel* event) override;
+  virtual bool readFall(void) override;
 
   /* **************************************************************************
    * Public Method <Override> - mframe::hal::InterruptEvent
@@ -108,16 +101,16 @@ class core::CoreTimer : public mframe::lang::Object,
   virtual void interruptEvent(void) override;
 
   /* **************************************************************************
-   * Public Method <Override> - mframe::hal::EventCencel
+   * Public Method <Override> - mframe::hal::EdgeTriggerEventFall
    */
  public:
-  virtual void onTimerCancel(void) override;
+  virtual void onEdgeTriggerFall(void) override;
 
   /* **************************************************************************
-   * Public Method <Override> - mframe::hal::EventCencel
+   * Public Method <Override> - mframe::hal::EdgeTriggerEventRise
    */
  public:
-  virtual void onTimerTrigger(void) override;
+  virtual void onEdgeTriggerRise(void) override;
 
   /* **************************************************************************
    * Public Method
@@ -144,4 +137,4 @@ class core::CoreTimer : public mframe::lang::Object,
  * End of file
  */
 
-#endif /* CHIP_20B4C8B1_8FF1_45C9_8678_F51C7602D9A8 */
+#endif /* CHIP_03434AE2_6EA9_4B98_8C25_5E12DC94E3B0 */

@@ -5,17 +5,19 @@
  * SPDX-License-Identifier: MIT
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Include
  */
-#define USING_CHIP_CRM
+
+//-----------------------------------------------------------------------------
+#include "CoreTimer.h"
+
 #include "chip_arterytek_at32f415.h"
 
-//-----------------------------------------------------------------------------------------
-#include "CoreTimer.h"
-#include "CoreChip.h"
+//-----------------------------------------------------------------------------
+#include "core_arterytek_at32f415/CoreChip.h"
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Namespace
  */
 namespace core {
@@ -96,65 +98,57 @@ namespace core {
   }
 }  // namespace core
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Macro
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Using
  */
 using core::CoreTimer;
 
-//-----------------------------------------------------------------------------------------
-using core::CoreInterrupt;
+//-----------------------------------------------------------------------------
 using chip::crm::CRM;
 using chip::tmr::TMR;
+using core::CoreInterrupt;
 
-/* ****************************************************************************************
- * Variable <Static>
- */
-
-/* ****************************************************************************************
+/* ****************************************************************************
  * Construct Method
  */
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 CoreTimer::CoreTimer(chip::tmr::Register& reg) : mReg(reg) {
-  this->mEventCancel = this;
-  this->mEventTrigger = this;
+  this->mTimerEventCancel = this;
+  this->mTimerEventTrigger = this;
   return;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 CoreTimer::~CoreTimer(void) {
   this->cancel();
   this->deinit();
-  this->mEventCancel = nullptr;
-  this->mEventTrigger = nullptr;
+  this->mTimerEventCancel = nullptr;
+  this->mTimerEventTrigger = nullptr;
   return;
 }
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Operator Method
  */
 
-/* ****************************************************************************************
- * Public Method <Static>
- */
-/* ****************************************************************************************
+/* ****************************************************************************
  * Public Method <Override> - mframe::hal::Base
  */
-
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreTimer::deinit(void) {
   if (!this->isInit())
     return false;
-  
+
   CoreInterrupt::getInstance().serviceEnable(getInterruptService(this->mReg), false);
   CoreInterrupt::getInstance().setHandler(getInterruptService(this->mReg), nullptr);
   return true;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreTimer::init(void) {
   if (this->isInit())
     return false;
@@ -164,29 +158,29 @@ bool CoreTimer::init(void) {
   return false;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreTimer::isInit(void) {
   return CRM::getPeriphClockEnable(getPeriphClock(this->mReg));
 }
 
-/* ****************************************************************************************
- * Public Method <Override> - mframe::hal::timer::Timer
+/* ****************************************************************************
+ * Public Method <Override> - mframe::hal::Timer
  */
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreTimer::cancel(void) {
   CoreInterrupt::getInstance().serviceEnable(getInterruptService(this->mReg), false);
   TMR::interruptEnable(this->mReg, chip::tmr::Interrupt::OVF, false);
-  this->mEventCancel->onTimerCancel();
+  this->mTimerEventCancel->onTimerCancel();
   return;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreTimer::isBusy(void) {
   return this->mReg.swevt_bit.ovfswtr;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreTimer::isDone(void) {
   if (this->mReg.ists_bit.ovfif) {
     this->mReg.ists_bit.ovfif = false;
@@ -195,7 +189,7 @@ bool CoreTimer::isDone(void) {
   return false;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreTimer::waitDone(void) {
   while (this->mReg.ists_bit.ovfif) {
   }
@@ -203,12 +197,12 @@ void CoreTimer::waitDone(void) {
   return;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 uint32_t CoreTimer::getTimerClock(void) {
   return CoreChip::getInstance().getSystemCoreClock();
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreTimer::startAtTick(uint32_t tick) {
   if (this->isBusy())
     return false;
@@ -224,7 +218,7 @@ bool CoreTimer::startAtTick(uint32_t tick) {
   return true;
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreTimer::startAtTime(float second) {
   chip::crm::CoreClock coreClock;
   chip::crm::CRM::clocksFreqGet(coreClock);
@@ -275,36 +269,36 @@ bool CoreTimer::startAtTime(float second) {
   return this->startAtTick(static_cast<uint32_t>(static_cast<float>(sourceClock) * second));
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool CoreTimer::startAtHertz(float hertz) {
   return this->startAtTime(1.0f / hertz);
 }
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreTimer::resetTick(uint32_t tick) {
   uint32_t div = 1 + (tick >> 16);
   uint32_t period = (tick / div);
   TMR::baseInit(this->mReg, period, div);
 }
 
-//-----------------------------------------------------------------------------------------
-void CoreTimer::CoreTimer::setEventTrigger(mframe::hal::timer::EventTrigger* event) {
+//-----------------------------------------------------------------------------
+void CoreTimer::CoreTimer::setTimerEventTrigger(mframe::hal::TimerEventTrigger* event) {
   if (event == nullptr)
-    this->mEventTrigger = this;
+    this->mTimerEventTrigger = this;
 
   else
-    this->mEventTrigger = event;
+    this->mTimerEventTrigger = event;
 
   return;
 }
 
-//-----------------------------------------------------------------------------------------
-void CoreTimer::setEventCancel(mframe::hal::timer::EventCancel* event) {
+//-----------------------------------------------------------------------------
+void CoreTimer::setTimerEventCancel(mframe::hal::TimerEventCancel* event) {
   if (event == nullptr)
-    this->mEventCancel = this;
+    this->mTimerEventCancel = this;
 
   else {
-    this->mEventCancel = event;
+    this->mTimerEventCancel = event;
     if (this->isBusy())
       TMR::interruptEnable(this->mReg, chip::tmr::Interrupt::OVF, true);
   }
@@ -312,59 +306,59 @@ void CoreTimer::setEventCancel(mframe::hal::timer::EventCancel* event) {
   return;
 }
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Public Method <Override> - mframe::hal::InterruptEvent
  */
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreTimer::interruptEvent(void) {
   if (TMR::flagGet(this->mReg, chip::tmr::Flag::OVF) == false)
     return;
 
   TMR::flagClear(this->mReg, chip::tmr::Flag::OVF);
 
-  this->mEventTrigger->onTimerTrigger();
+  this->mTimerEventTrigger->onTimerTrigger();
   return;
 }
 
-/* ****************************************************************************************
- * Public Method <Override> - mframe::hal::timer::EventCancel
+/* ****************************************************************************
+ * Public Method <Override> - mframe::hal::TimerEventCancel
  */
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreTimer::onTimerCancel(void) {
   return;
 }
 
-/* ****************************************************************************************
- * Public Method <Override> - mframe::hal::timer::EventTrigger
+/* ****************************************************************************
+ * Public Method <Override> - mframe::hal::TimerEventTrigger
  */
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CoreTimer::onTimerTrigger(void) {
   TMR::interruptEnable(this->mReg, chip::tmr::Interrupt::OVF, false);
   return;
 }
-/* ****************************************************************************************
+/* ****************************************************************************
  * Public Method
  */
 
-/* ****************************************************************************************
- * Protected Method <Static>
- */
-
-/* ****************************************************************************************
- * Protected Method <Override>
- */
-
-/* ****************************************************************************************
+/* ****************************************************************************
  * Protected Method
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Private Method
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
+ * Static Variable
+ */
+
+/* ****************************************************************************
+ * Static Method
+ */
+
+/* ****************************************************************************
  * End of file
  */

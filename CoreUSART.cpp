@@ -5,18 +5,20 @@
  * SPDX-License-Identifier: MIT
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Include
  */
-#define USING_CHIP_CRM
+
+//-----------------------------------------------------------------------------
+#include "CoreUSART.h"
+
 #include "chip_arterytek_at32f415.h"
 
-//-----------------------------------------------------------------------------------------
-#include "./CoreChip.h"
-#include "./CoreInterrupt.h"
-#include "./CoreUSART.h"
+//-----------------------------------------------------------------------------
+#include "core_arterytek_at32f415/CoreChip.h"
+#include "core_arterytek_at32f415/CoreInterrupt.h"
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Namespace
  */
 namespace core {
@@ -66,16 +68,16 @@ namespace core {
 
 }  // namespace core
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Macro
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Using
  */
 using core::CoreUSART;
 
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 using chip::crm::CRM;
 using chip::usart::DataBit;
 using chip::usart::Interrupt;
@@ -83,11 +85,7 @@ using chip::usart::StopBit;
 using core::CoreChip;
 using core::CoreInterrupt;
 
-/* ****************************************************************************************
- * Variable <Static>
- */
-
-/* ****************************************************************************************
+/* ****************************************************************************
  * Construct Method
  */
 
@@ -100,15 +98,11 @@ CoreUSART::~CoreUSART(void) {
   this->deinit();
   return;
 }
-/* ****************************************************************************************
+/* ****************************************************************************
  * Operator Method
  */
 
-/* ****************************************************************************************
- * Public Method <Static>
- */
-
-/* ****************************************************************************************
+/* ****************************************************************************
  * Public Method <Override>  - mframe::hal::Base
  */
 
@@ -155,8 +149,8 @@ bool CoreUSART::isInit(void) {
   return CRM::getPeriphClockEnable(core::getPeriphClock(this->mReg));
 }
 
-/* ****************************************************************************************
- * Public Method <Override>  - mframe::hal::usart::USART
+/* ****************************************************************************
+ * Public Method <Override>  - mframe::hal::usart::Uart
  */
 
 /** ---------------------------------------------------------------------------------------
@@ -211,12 +205,12 @@ void CoreUSART::beginReceiver(bool enable) {
 /** ---------------------------------------------------------------------------------------
  *
  */
-void CoreUSART::setEventTransfer(mframe::hal::usart::EventTransfer* event) {
+void CoreUSART::setUartEventTransfer(mframe::hal::usart::UartEventTransfer* event) {
   if (event)
-    this->mEventTransfer = event;
+    this->mUartEventTransfer = event;
 
   else
-    this->mEventTransfer = this;
+    this->mUartEventTransfer = this;
 
   return;
 }
@@ -224,17 +218,17 @@ void CoreUSART::setEventTransfer(mframe::hal::usart::EventTransfer* event) {
 /** ---------------------------------------------------------------------------------------
  *
  */
-void CoreUSART::setEventReceiver(mframe::hal::usart::EventReceiver* event) {
+void CoreUSART::setUartEventReceiver(mframe::hal::usart::UartEventReceiver* event) {
   if (event)
-    this->mEventReceiver = event;
+    this->mUartEventReceiver = event;
 
   else
-    this->mEventReceiver = this;
+    this->mUartEventReceiver = this;
 
   return;
 }
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Public Method <Override>  - mframe::hal::InterruptEvent
  */
 
@@ -244,14 +238,14 @@ void CoreUSART::setEventReceiver(mframe::hal::usart::EventReceiver* event) {
 void CoreUSART::interruptEvent(void) {
   if (chip::usart::USART::flagGet(this->mReg, chip::usart::Flag::RDBF)) {
     uint16_t readCache = chip::usart::USART::dataReceive(this->mReg);
-    this->mEventReceiver->onUartReceiver(static_cast<uint8_t>(readCache));
+    this->mUartEventReceiver->onUartReceiver(static_cast<uint8_t>(readCache));
   }
 
   // send handle
   if (chip::usart::USART::flagGet(this->mReg, chip::usart::Flag::TDBE)) {
     uint8_t data;
 
-    if (this->mEventTransfer->onUartTransfer(data)) {
+    if (this->mUartEventTransfer->onUartTransfer(data)) {
       /* Write one byte to the transmit data register */
       chip::usart::USART::dataTransmit(this->mReg, data);
 
@@ -261,7 +255,7 @@ void CoreUSART::interruptEvent(void) {
   }
 }
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Public Method <Override>  - mframe::hal::InterruptEvent
  */
 
@@ -279,26 +273,26 @@ bool CoreUSART::onUartTransfer(uint8_t& data) {
   return false;
 }
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Public Method
  */
 
-/* ****************************************************************************************
- * Protected Method <Static>
- */
-
-/* ****************************************************************************************
- * Protected Method <Override>
- */
-
-/* ****************************************************************************************
+/* ****************************************************************************
  * Protected Method
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
  * Private Method
  */
 
-/* ****************************************************************************************
+/* ****************************************************************************
+ * Static Variable
+ */
+
+/* ****************************************************************************
+ * Static Method
+ */
+
+/* ****************************************************************************
  * End of file
  */
