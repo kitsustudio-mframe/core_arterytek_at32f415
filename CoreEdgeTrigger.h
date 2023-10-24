@@ -4,8 +4,8 @@
  *
  * SPDX-License-Identifier: MIT
  */
-#ifndef CHIP_03434AE2_6EA9_4B98_8C25_5E12DC94E3B0
-#define CHIP_03434AE2_6EA9_4B98_8C25_5E12DC94E3B0
+#ifndef CORE_03434AE2_6EA9_4B98_8C25_5E12DC94E3B0
+#define CORE_03434AE2_6EA9_4B98_8C25_5E12DC94E3B0
 
 /* ****************************************************************************
  * Include
@@ -137,4 +137,4 @@ class core::CoreEdgeTrigger : public mframe::lang::Object,
  * End of file
  */
 
-#endif /* CHIP_03434AE2_6EA9_4B98_8C25_5E12DC94E3B0 */
+#endif /* CORE_03434AE2_6EA9_4B98_8C25_5E12DC94E3B0 */

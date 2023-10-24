@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef CHIP_BD2A9420_72E7_485B_886F_F8FEF77E69C0
-#define CHIP_BD2A9420_72E7_485B_886F_F8FEF77E69C0
+#ifndef CORE_BD2A9420_72E7_485B_886F_F8FEF77E69C0
+#define CORE_BD2A9420_72E7_485B_886F_F8FEF77E69C0
 
 /* ****************************************************************************
  * Include
@@ -527,4 +527,4 @@ class core::CoreIomux : public mframe::lang::Object,
  * End of file
  */
 
-#endif /* CHIP_BD2A9420_72E7_485B_886F_F8FEF77E69C0 */
+#endif /* CORE_BD2A9420_72E7_485B_886F_F8FEF77E69C0 */

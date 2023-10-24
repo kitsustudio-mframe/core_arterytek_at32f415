@@ -209,9 +209,10 @@ bool CoreTimer::startAtTick(uint32_t tick) {
 
   this->resetTick(tick);
 
-  TMR::cntDirSet(this->mReg, chip::tmr::CountMode::UP);
+  TMR::cntDirSet(this->mReg, chip::tmr::CountMode::DOWN);
   TMR::clockSourceDivSet(this->mReg, chip::tmr::ClockDivision::DIV1);
 
+  TMR::flagClear(this->mReg, chip::tmr::Flag::OVF);
   TMR::interruptEnable(this->mReg, chip::tmr::Interrupt::OVF, true);
   TMR::counterEnable(this->mReg, true);
   CoreInterrupt::getInstance().serviceEnable(getInterruptService(this->mReg), true);

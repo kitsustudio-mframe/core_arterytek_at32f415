@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef CHIP_EF4F5B70_C257_44EE_8874_9BBD7AFAD856
-#define CHIP_EF4F5B70_C257_44EE_8874_9BBD7AFAD856
+#ifndef CORE_EF4F5B70_C257_44EE_8874_9BBD7AFAD856
+#define CORE_EF4F5B70_C257_44EE_8874_9BBD7AFAD856
 
 /* ****************************************************************************
  * Include
@@ -174,4 +174,4 @@ class core::CoreGeneralPin : public mframe::lang::Object,
  * End of file
  */
 
-#endif /* CHIP_EF4F5B70_C257_44EE_8874_9BBD7AFAD856 */
+#endif /* CORE_EF4F5B70_C257_44EE_8874_9BBD7AFAD856 */

@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef CHIP_B783141D_7465_4A74_900D_2B6244C11E04
-#define CHIP_B783141D_7465_4A74_900D_2B6244C11E04
+#ifndef CORE_B783141D_7465_4A74_900D_2B6244C11E04
+#define CORE_B783141D_7465_4A74_900D_2B6244C11E04
 
 /* ****************************************************************************
  * Include
@@ -200,4 +200,4 @@ class core::CoreChip : public mframe::lang::Object {
  * End of file
  */
 
-#endif /* CHIP_B783141D_7465_4A74_900D_2B6244C11E04 */
+#endif /* CORE_B783141D_7465_4A74_900D_2B6244C11E04 */

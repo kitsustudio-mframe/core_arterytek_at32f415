@@ -4,8 +4,8 @@
  *
  * SPDX-License-Identifier: MIT
  */
-#ifndef CHIP_D7A70DEF_54B9_45EC_A30E_DB857A71334B
-#define CHIP_D7A70DEF_54B9_45EC_A30E_DB857A71334B
+#ifndef CORE_D7A70DEF_54B9_45EC_A30E_DB857A71334B
+#define CORE_D7A70DEF_54B9_45EC_A30E_DB857A71334B
 
 /* ****************************************************************************
  * Include
@@ -37,4 +37,4 @@ enum struct core::OutputMode : char {
  * End of file
  */
 
-#endif /* CHIP_D7A70DEF_54B9_45EC_A30E_DB857A71334B */
+#endif /* CORE_D7A70DEF_54B9_45EC_A30E_DB857A71334B */

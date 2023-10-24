@@ -4,8 +4,8 @@
  *
  * SPDX-License-Identifier: MIT
  */
-#ifndef CHIP_20B4C8B1_8FF1_45C9_8678_F51C7602D9A8
-#define CHIP_20B4C8B1_8FF1_45C9_8678_F51C7602D9A8
+#ifndef CORE_20B4C8B1_8FF1_45C9_8678_F51C7602D9A8
+#define CORE_20B4C8B1_8FF1_45C9_8678_F51C7602D9A8
 
 /* ****************************************************************************
  * Include
@@ -144,4 +144,4 @@ class core::CoreTimer : public mframe::lang::Object,
  * End of file
  */
 
-#endif /* CHIP_20B4C8B1_8FF1_45C9_8678_F51C7602D9A8 */
+#endif /* CORE_20B4C8B1_8FF1_45C9_8678_F51C7602D9A8 */

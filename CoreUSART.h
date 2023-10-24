@@ -4,8 +4,8 @@
  *
  * SPDX-License-Identifier: MIT
  */
-#ifndef CHIP_25C7B452_0536_494F_9927_E6F526433BAC
-#define CHIP_25C7B452_0536_494F_9927_E6F526433BAC
+#ifndef CORE_25C7B452_0536_494F_9927_E6F526433BAC
+#define CORE_25C7B452_0536_494F_9927_E6F526433BAC
 
 /* ****************************************************************************
  * Include
@@ -27,18 +27,18 @@ namespace core {
  * Class/Interface/Struct/Enum
  */
 class core::CoreUSART : public mframe::lang::Object,
-                        public mframe::hal::usart::Uart,
+                        public mframe::hal::Uart,
                         public mframe::hal::InterruptEvent,
-                        public mframe::hal::usart::UartEventTransfer,
-                        public mframe::hal::usart::UartEventReceiver {
+                        public mframe::hal::UartEventTransfer,
+                        public mframe::hal::UartEventReceiver {
   /* **************************************************************************
    * Variable
    */
 
  private:
   chip::usart::Register& mReg;
-  mframe::hal::usart::UartEventTransfer* mUartEventTransfer;
-  mframe::hal::usart::UartEventReceiver* mUartEventReceiver;
+  mframe::hal::UartEventTransfer* mUartEventTransfer;
+  mframe::hal::UartEventReceiver* mUartEventReceiver;
   uint32_t mBaudrate;
 
   /* **************************************************************************
@@ -76,7 +76,7 @@ class core::CoreUSART : public mframe::lang::Object,
 
   virtual bool isInit(void) override;
   /* **************************************************************************
-   * Public Method <Override> - mframe::hal::usart::Uart
+   * Public Method <Override> - mframe::hal::Uart
    */
  public:
   virtual uint32_t setBaudrate(uint32_t baudrate) override;
@@ -87,9 +87,9 @@ class core::CoreUSART : public mframe::lang::Object,
 
   virtual void beginReceiver(bool enable) override;
 
-  virtual void setUartEventTransfer(mframe::hal::usart::UartEventTransfer* event) override;
+  virtual void setUartEventTransfer(mframe::hal::UartEventTransfer* event) override;
 
-  virtual void setUartEventReceiver(mframe::hal::usart::UartEventReceiver* event) override;
+  virtual void setUartEventReceiver(mframe::hal::UartEventReceiver* event) override;
 
   /* **************************************************************************
    * Public Method <Override> - mframe::hal::InterruptEvent
@@ -98,13 +98,13 @@ class core::CoreUSART : public mframe::lang::Object,
   virtual void interruptEvent(void) override;
 
   /* **************************************************************************
-   * Public Method <Override> - mframe::hal::usart::UartEventReceiver
+   * Public Method <Override> - mframe::hal::UartEventReceiver
    */
  public:
   virtual bool onUartReceiver(const uint8_t data) override;
 
   /* **************************************************************************
-   * Public Method <Override> - mframe::hal::usart::UartEventTransfer
+   * Public Method <Override> - mframe::hal::UartEventTransfer
    */
  public:
   virtual bool onUartTransfer(uint8_t& data) override;
@@ -133,4 +133,4 @@ class core::CoreUSART : public mframe::lang::Object,
  * End of file
  */
 
-#endif /* CHIP_25C7B452_0536_494F_9927_E6F526433BAC */
+#endif /* CORE_25C7B452_0536_494F_9927_E6F526433BAC */

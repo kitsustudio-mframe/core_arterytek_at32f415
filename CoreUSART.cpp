@@ -150,7 +150,7 @@ bool CoreUSART::isInit(void) {
 }
 
 /* ****************************************************************************
- * Public Method <Override>  - mframe::hal::usart::Uart
+ * Public Method <Override>  - mframe::hal::Uart
  */
 
 /** ---------------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ void CoreUSART::beginReceiver(bool enable) {
 /** ---------------------------------------------------------------------------------------
  *
  */
-void CoreUSART::setUartEventTransfer(mframe::hal::usart::UartEventTransfer* event) {
+void CoreUSART::setUartEventTransfer(mframe::hal::UartEventTransfer* event) {
   if (event)
     this->mUartEventTransfer = event;
 
@@ -218,7 +218,7 @@ void CoreUSART::setUartEventTransfer(mframe::hal::usart::UartEventTransfer* even
 /** ---------------------------------------------------------------------------------------
  *
  */
-void CoreUSART::setUartEventReceiver(mframe::hal::usart::UartEventReceiver* event) {
+void CoreUSART::setUartEventReceiver(mframe::hal::UartEventReceiver* event) {
   if (event)
     this->mUartEventReceiver = event;
 
